@@ -1,61 +1,184 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
-<center>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Inscripción Daguva CUP</title>
-<h1>Formulario de Inscripción DAGUVA CUP</h1>
-</center>
-</head>
-<body>
+
     <center>
-         <h2>nombre</h2>
-<br>
-   <input type="text" name="pregunta0">    
 
-<br>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Formulario de Inscripción Daguva CUP</title>
+
+        <h1>Formulario de Inscripción DAGUVA CUP</h1>
+
+    </center>
+
+</head>
+
+<body>
+
+    <center>
+
+        <h2>nombre</h2>
+
+        <br>
+
+        <input type="text" name="pregunta0">
+
+        <br>
+
         <h2>edad</h2>
-<br>
-   <input type="text" name="pregunta1">    
 
-<br>
-   
-    <h2>fecha de nacimiento</h2>
-  
-    <br>
-    <input type="text" name="pregunta2"> 
+        <br>
 
-<br>
+        <input type="text" name="pregunta1">
 
-  <h2>dni</h2>
-  <br>
-    <input type="text" name="pregunta3"> 
+        <br>
 
-<br>
-   
-  
-    <h2>nombre de equipo</h2>
-  <br>
-    <input type="text" name="pregunta4"> 
+        <h2>fecha de nacimiento</h2>
 
-<br>
-<br>
-<input type="button" value="enviar Formulario" onclick="formulario()">
+        <br>
 
-<p id="formulario"></p>
+        <input type="text" name="pregunta2">
 
-<script> 
- function formulario() {
-document.getElementById("formulario").innerHTML  = "Tu formulario sera revisado y evaluado";
+        <br>
+
+        <h2>dni</h2>
+
+        <br>
+
+        <input type="text" name="pregunta3">
+
+        <br>
+
+        <h2>nombre de equipo</h2>
+
+        <br>
+
+        <input type="text" name="pregunta4">
+
+        <br>
+        <br>
+
+        <input type="button" value="enviar Formulario" onclick="formulario()">
+
+        <p id="formulario"></p>
 
 
-    }
-   </script>
+        <h2>Inscripciones registradas</h2>
 
-  </script>
+        <div id="lista"></div>
 
-</center>
+
+        <script>
+
+            async function formulario() {
+
+                // Obtener los datos de TU formulario original
+
+                const nombre =
+                    document.querySelector('[name="pregunta0"]').value;
+
+                const edad =
+                    document.querySelector('[name="pregunta1"]').value;
+
+                const fecha =
+                    document.querySelector('[name="pregunta2"]').value;
+
+                const dni =
+                    document.querySelector('[name="pregunta3"]').value;
+
+                const equipo =
+                    document.querySelector('[name="pregunta4"]').value;
+
+
+                // Enviar los datos a Node.js
+
+                const respuesta = await fetch("/inscripciones", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        nombre: nombre,
+                        edad: edad,
+                        fecha: fecha,
+                        dni: dni,
+                        equipo: equipo
+
+                    })
+
+                });
+
+
+                const datos = await respuesta.json();
+
+
+                // Mostrar el mensaje que ya tenías
+
+                document.getElementById("formulario").innerHTML =
+                    datos.mensaje;
+
+
+                // Actualizar la lista
+
+                cargarInscripciones();
+
+            }
+
+
+            async function cargarInscripciones() {
+
+                const respuesta =
+                    await fetch("/inscripciones");
+
+                const inscripciones =
+                    await respuesta.json();
+
+
+                document.getElementById("lista").innerHTML = "";
+
+
+                inscripciones.forEach(function(inscripcion) {
+
+                    document.getElementById("lista").innerHTML +=
+
+                        "<p>" +
+
+                        "ID: " + inscripcion.id +
+
+                        " | Nombre: " + inscripcion.nombre +
+
+                        " | Edad: " + inscripcion.edad +
+
+                        " | Fecha de nacimiento: " +
+                        inscripcion.fecha +
+
+                        " | DNI: " + inscripcion.dni +
+
+                        " | Equipo: " + inscripcion.equipo +
+
+                        "</p>";
+
+                });
+
+            }
+
+
+            // Mostrar las inscripciones existentes al abrir la página
+
+            cargarInscripciones();
+
+        </script>
+
+    </center>
+
 </body>
 
 </html>
